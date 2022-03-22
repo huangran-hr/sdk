@@ -38,6 +38,7 @@ public class MemberInvoker extends SimpleInvoker {
 		if(header.get("Authorization") == null){
 			String token = tokenService.getToken();
 			header.put("Authorization","Bearer "+token);
+			param.setHeader(header);
 		}
 		return super.invoke(param);
 	}
