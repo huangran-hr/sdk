@@ -21,6 +21,20 @@ public class DefaultKunlunMemberService implements KunlunMemberService {
     private Invoker getInvoker(){
         return invokerFactory.getInvoker("kunlun.member");
     }
+    
+    public <R,P> R invoke(Class<R> clazz,P request,String target){
+        InvokerParam<R> param = InvokerParamBuilder.newInstance().buildPost(clazz);
+        param.setParam(request);
+        param.setTarget(target);
+        return getInvoker().invoke(param);
+    }
+
+    public <R,P> R invokeGet(Class<R> clazz,P request,String target){
+        InvokerParam<R> param = InvokerParamBuilder.newInstance().buildGet(clazz);
+        param.setParam(request);
+        param.setTarget(target);
+        return getInvoker().invoke(param);
+    }
 
 
     /**
@@ -30,9 +44,6 @@ public class DefaultKunlunMemberService implements KunlunMemberService {
      */
     @Override
     public ProfileDto getProfiles(String profileId) {
-        GenericType<ProfileDto> type = new GenericType<>(){};
-        InvokerParam<ProfileDto> param = InvokerParamBuilder.newInstance().buildFormGet(type);
-        param.setTarget("/api/v1/profiles/" + profileId);
-        return getInvoker().invoke(param);
+        return invokeGet(ProfileDto.class,null,"/api/v1/profiles/" + profileId);
     }
 }
