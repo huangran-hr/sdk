@@ -1,15 +1,14 @@
-/**
- *
- */
 package com.sjlh.kunlun.membership.push;
+
 import com.sjlh.hotel.common.annotation.InvokerMeta;
 import com.sjlh.hotel.common.net.InvokerParam;
 import com.sjlh.hotel.common.net.SimpleInvoker;
 import com.sjlh.kunlun.membership.config.MemberConfiguration;
 import com.sjlh.kunlun.membership.member.service.TokenService;
+import com.sjlh.kunlun.membership.utils.BuildQueryUtil;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.HttpMethod;
+import java.util.*;
 
 /**
  * @author Administrator
@@ -23,11 +22,16 @@ public class MemberInvoker extends SimpleInvoker {
 	@Resource
 	private TokenService tokenService;
 
+	@Override
 	protected <T> void initTarget(InvokerParam<T> param) {
 		String target = param.getTarget();
-		if(target!=null && !target.startsWith("http")) {
+		if(target!=null && !target.startsWith("https")) {
 			if(!target.startsWith("/"))target = "/" + target;
 			param.setTarget(config.getHost() + target);
+		}
+
+		if(HttpMethod.GET.equals(param.getMethod()) && param.getParam() != null){
+			param.setTarget(BuildQueryUtil.buildQuery(param.getTarget(),param.getParam()));
 		}
 	}
 
@@ -42,4 +46,6 @@ public class MemberInvoker extends SimpleInvoker {
 		}
 		return super.invoke(param);
 	}
+
+
 }
